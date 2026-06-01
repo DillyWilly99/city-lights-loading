@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Lights RP - Loading</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="loading-container">
+        <!-- Background -->
+        <div class="background"></div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <h1 class="main-title">City Lights</h1>
+                <h2 class="sub-title">RP</h2>
+                <p class="tagline">YOUR STORY. YOUR CITY. YOUR LIFE.</p>
+            </div>
+
+            <!-- Server Info -->
+            <div class="server-info">
+                <div class="info-item">
+                    <span class="info-label">Players Online:</span>
+                    <span class="info-value" id="playerCount">0/128</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Ping:</span>
+                    <span class="info-value" id="ping">0ms</span>
+                </div>
+            </div>
+
+            <!-- Loading Bar -->
+            <div class="loading-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="loading-text" id="loadingText">Connecting to City Lights...</p>
+                <p class="loading-tip" id="loadingTip"></p>
+            </div>
+
+            <!-- Music Controls -->
+            <div class="music-controls">
+                <button id="musicToggle" class="music-btn">
+                    <span id="musicIcon">🔊</span> Music
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
