@@ -1,4 +1,4 @@
-// To-Do List App with Local Storage and Loading Screen
+// To-Do List App with Loading Screen, Mouse Tracking, Volume Control & Mini Game
 
 class TodoApp {
     constructor() {
@@ -16,8 +16,11 @@ class TodoApp {
     initElements() {
         // Loading Screen Elements
         this.loadingScreen = document.getElementById('loadingScreen');
+        this.loadingContent = document.getElementById('loadingContent');
         this.loadingFill = document.getElementById('loadingFill');
         this.loadingText = document.getElementById('loadingText');
+        this.volumeSlider = document.getElementById('volumeSlider');
+        this.volumeValue = document.getElementById('volumeValue');
         this.musicToggle = document.getElementById('musicToggle');
         this.musicIcon = document.getElementById('musicIcon');
         this.mainApp = document.getElementById('mainApp');
@@ -34,10 +37,23 @@ class TodoApp {
         this.filterBtns = document.querySelectorAll('.filter-btn');
         this.appMusicToggle = document.getElementById('appMusicToggle');
         this.appMusicIcon = document.getElementById('appMusicIcon');
+        this.appVolumeSlider = document.getElementById('appVolumeSlider');
+        this.appVolumeValue = document.getElementById('appVolumeValue');
         this.bgMusic = document.getElementById('bgMusic');
+        
+        // Game Elements
+        this.gameButton = document.getElementById('gameButton');
+        this.gameModal = document.getElementById('gameModal');
+        this.closeGameBtn = document.getElementById('closeGameBtn');
     }
 
     attachEventListeners() {
+        // Loading Screen Mouse Tracking
+        this.loadingScreen.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        
+        // Loading Screen Volume Control
+        this.volumeSlider.addEventListener('input', (e) => this.handleVolumeChange(e));
+        
         // Loading Screen Music Toggle
         this.musicToggle.addEventListener('click', () => this.toggleLoadingMusic());
         
@@ -49,6 +65,13 @@ class TodoApp {
         this.clearCompleted.addEventListener('click', () => this.clearCompletedTasks());
         this.appMusicToggle.addEventListener('click', () => this.toggleAppMusic());
         
+        // App Volume Control
+        this.appVolumeSlider.addEventListener('input', (e) => this.handleAppVolumeChange(e));
+        
+        // Game Controls
+        this.gameButton.addEventListener('click', () => this.openGame());
+        this.closeGameBtn.addEventListener('click', () => this.closeGame());
+        
         this.filterBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.filterBtns.forEach(b => b.classList.remove('active'));
@@ -57,6 +80,44 @@ class TodoApp {
                 this.render();
             });
         });
+    }
+
+    openGame() {
+        this.gameModal.classList.remove('hidden');
+        initGame();
+    }
+
+    closeGame() {
+        this.gameModal.classList.add('hidden');
+        if (froggerGame) {
+            froggerGame.reset();
+        }
+    }
+
+    handleMouseMove(e) {
+        const mouseX = (e.clientX / window.innerWidth) * 100;
+        const mouseY = (e.clientY / window.innerHeight) * 100;
+        
+        const centerX = 50;
+        const centerY = 50;
+        
+        const rotateX = (mouseY - centerY) * 0.5;
+        const rotateY = (mouseX - centerX) * 0.5;
+        
+        this.loadingContent.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    }
+
+    handleVolumeChange(e) {
+        const volume = parseInt(e.target.value);
+        this.volumeValue.textContent = volume + '%';
+        this.bgMusic.volume = volume / 100;
+    }
+
+    handleAppVolumeChange(e) {
+        const volume = parseInt(e.target.value);
+        this.appVolumeValue.textContent = volume + '%';
+        this.bgMusic.volume = volume / 100;
+        this.volumeSlider.value = volume;
     }
 
     startLoading() {
@@ -91,7 +152,11 @@ class TodoApp {
         setTimeout(() => {
             this.loadingScreen.classList.add('hidden');
             this.mainApp.classList.remove('hidden');
-            this.fadeOutLoadingMusic();
+            this.appVolumeSlider.value = this.volumeSlider.value;
+            
+            if (!this.musicEnabled) {
+                this.fadeOutLoadingMusic();
+            }
             this.render();
             this.taskInput.focus();
         }, 500);
@@ -129,16 +194,17 @@ class TodoApp {
         const steps = 50;
         const stepDuration = duration / steps;
         let step = 0;
+        const targetVolume = parseInt(this.volumeSlider.value) / 100;
         
         this.bgMusic.play().catch(err => console.log('Audio play error:', err));
         
         const fadeInterval = setInterval(() => {
             step++;
-            this.bgMusic.volume = (step / steps) * 0.6;
+            this.bgMusic.volume = (step / steps) * targetVolume;
             
             if (step >= steps) {
                 clearInterval(fadeInterval);
-                this.bgMusic.volume = 0.6;
+                this.bgMusic.volume = targetVolume;
             }
         }, stepDuration);
     }
@@ -156,7 +222,6 @@ class TodoApp {
             if (step >= steps) {
                 clearInterval(fadeInterval);
                 this.bgMusic.pause();
-                this.bgMusic.volume = 0.6;
             }
         }, stepDuration);
     }
@@ -174,7 +239,6 @@ class TodoApp {
             if (step >= steps) {
                 clearInterval(fadeInterval);
                 this.bgMusic.pause();
-                this.bgMusic.volume = 0.6;
             }
         }, stepDuration);
     }
